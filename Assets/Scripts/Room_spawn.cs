@@ -14,6 +14,7 @@ public class Room_spawn : MonoBehaviour
         public int minZ = -250;
         public int attempts_spawn = 50;
         public float least_distance=70f;
+        public float max_distance=150f;
         public bool Start_spawn = false;
         public float Road_length = 10f;
         private float Road_width = 0.1f;
@@ -459,7 +460,8 @@ public class Room_spawn : MonoBehaviour
         {
             foreach(Bounds roomBound in roomBounds)
             {
-                if (!IsCovered(roadBound, roomBound)&&roadBound.Intersects(roomBound))
+                // if (!IsCovered(roadBound, roomBound)&&roadBound.Intersects(roomBound))
+                if (roadBound.Intersects(roomBound))
                 {
                     Bounds newbound = GetIntersectionBounds(roadBound, roomBound);
                     GameObject wall_up = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -488,7 +490,7 @@ public class Room_spawn : MonoBehaviour
                             // wall_support.transform.position = new Vector3(newbound.min.x, wall_height / 2f, newbound.center.z);
                             // wall_support.transform.localScale = new Vector3(0.1f, wall_height, Mathf.Abs(roadBound.max.z - roadBound.min.z));
                         }
-                        else
+                        else if (Mathf.Approximately(newbound.max.x, roomBound.max.x))
                         {
                             wall_up.transform.position = new Vector3(newbound.max.x, wall_height / 2f, middle_up);
                             wall_down.transform.position = new Vector3(newbound.max.x, wall_height / 2f, middle_down);
@@ -500,7 +502,7 @@ public class Room_spawn : MonoBehaviour
                         wall_down.transform.localScale = new Vector3(0.1f, wall_height, length_down);
                         
                     }
-                    else
+                    else if (Mathf.Approximately(newbound.min.z, roomBound.min.z) || Mathf.Approximately(newbound.max.z, roomBound.max.z))
                     {
                         middle_up = (roomBound.max.x + newbound.max.x) / 2f; 
                         middle_down = (roomBound.min.x + newbound.min.x) / 2f;
@@ -515,7 +517,7 @@ public class Room_spawn : MonoBehaviour
                             // wall_support.transform.position = new Vector3(newbound.center.x, wall_height / 2f, newbound.min.z);
                             // wall_support.transform.localScale = new Vector3(Mathf.Abs(roadBound.max.x - roadBound.min.x), wall_height, 0.1f);
                         }
-                        else
+                        else if (Mathf.Approximately(newbound.max.z, roomBound.max.z))
                         {
                             wall_up.transform.position = new Vector3(middle_up, wall_height / 2f, newbound.max.z);
                             wall_down.transform.position = new Vector3(middle_down, wall_height / 2f, newbound.max.z);
@@ -546,11 +548,11 @@ public class Room_spawn : MonoBehaviour
                 Vector3 side2 = Vector3.zero;
                 if (Mathf.Approximately(side.z, room.center.z))
                 {
-                    side2 = new Vector3(side.x,side.y,side.z+20f);
+                    side2 = new Vector3(side.x,side.y,side.z+Road_length);
                 }
                 else
                 {
-                    side2 = new Vector3(side.x+20f,side.y,side.z);
+                    side2 = new Vector3(side.x+Road_length,side.y,side.z);
                 }
                 int count = 0;
                 foreach(Bounds wall in Walls)                {
@@ -679,7 +681,8 @@ public class Room_spawn : MonoBehaviour
                 Quaternion rotation_quaternion = Quaternion.Euler(rotation);
                 Vector3 position = new Vector3(x, 0, z);
                 Vector3 halfExtents = new Vector3(least_distance, 0.1f, least_distance);
-                if (!Physics.CheckBox(position, halfExtents))
+                Vector3 halfExtents_max = new Vector3(max_distance, 0.1f, max_distance);
+                if (!Physics.CheckBox(position, halfExtents)&&Physics.CheckBox(position, halfExtents_max))
                 {
                     GameObject instance = Instantiate(prefab, position, rotation_quaternion);
                     // CreateRoom_Wall(instance);
