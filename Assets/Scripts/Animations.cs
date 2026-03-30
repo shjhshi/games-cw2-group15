@@ -5,8 +5,8 @@ public class AnimationStateController : MonoBehaviour
 {
     [Header("References")]
     public Animator animator;
-    private CharacterController controller;
-    private PlayerController movementScript;
+    public CharacterController controller;
+    public PlayerController movementScript;
     
     [Header("Attack Settings")]
     public float punchCooldown = 0.5f;
@@ -22,9 +22,9 @@ public class AnimationStateController : MonoBehaviour
     private float nextAttackTime = 0f;
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        //controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
-        movementScript = GetComponent<PlayerController>();
+        //movementScript = GetComponent<PlayerController>();
         //I was trying to figure out why this wasnt working and it was because i hadnt linked the code to the character....
         //Debug.LogError("working");
         //checks because it doesnt seem to work
@@ -62,20 +62,27 @@ public class AnimationStateController : MonoBehaviour
     void AnimationState()
     {
 
-        Vector3 horizontalVelocity = new Vector3(controller.velocity.x, 0, controller.velocity.z);
+        Vector3 horizontalVelocity = new(controller.velocity.x, 0, controller.velocity.z);
+
         float currentSpeed = horizontalVelocity.magnitude;
+
         //the speed goes to crazy low values like 1e-44 so added to remove that from bugging movment
+
         if (currentSpeed < 0.1f)
+
         {
+
             animator.SetFloat("Speed", 0);
+
         }
+
         animator.SetFloat("Speed", currentSpeed, dampening, Time.deltaTime);
 
         animator.SetBool("isGround", movementScript.IsGrounded);
 
         if (Input.GetButtonDown("Jump") && movementScript.IsGrounded)
         {
-            animator.SetBool("Jump", true);
+            animator.SetTrigger("Jump");
         }
         //cant use else because it updates too quickly and you loop
         if (!movementScript.IsGrounded)

@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void HandleInput()
-    {
+    { 
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
+       
     }
 
     private void ApplyGravity()
