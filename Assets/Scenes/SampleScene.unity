@@ -178,6 +178,8 @@ MonoBehaviour:
   road_bounds: []
   room_bounds: []
   turning_points: []
+  wall_material: {fileID: 0}
+  floor_material: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

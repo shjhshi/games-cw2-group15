@@ -26,8 +26,20 @@ public class Room_spawn : MonoBehaviour
         public List<Bounds> road_bounds = new List<Bounds>();
         public List<Bounds> room_bounds = new List<Bounds>();
         public List<GameObject> turning_points = new List<GameObject>();
+        public Material wall_material = null;
+        public Material floor_material = null;
     void Start()
     {
+        wall_material = Resources.Load<Material>("wall_material");
+        if (wall_material == null)
+        {
+            Debug.LogWarning("Failed to load wall material. Please ensure 'wall_material' exists in the Resources folder.");
+        }
+        floor_material = Resources.Load<Material>("floor_material");
+        if (floor_material == null)
+        {
+            Debug.LogWarning("Failed to load floor material. Please ensure 'floor_material' exists in the Resources folder.");
+        }
         Start_spawn = false;
     }
 // Update is called once per frame
@@ -64,6 +76,16 @@ public class Room_spawn : MonoBehaviour
                 Generatewall_turning(turning.transform.position, road_bounds);
         }
         CreateCorridorWall();
+
+        foreach (GameObject road in road_prefabs)
+        {
+            road.GetComponent<Renderer>().material = floor_material;
+        }
+        foreach (GameObject turning in turning_points)
+        {
+            turning.GetComponent<Renderer>().material = floor_material;
+        }
+
 
         place_navigation();
     }
@@ -230,6 +252,7 @@ public class Room_spawn : MonoBehaviour
                 {
                     Turning_wall.transform.localScale = new Vector3(Road_length, wall_height, 0.3f);
                 }
+                Turning_wall.GetComponent<Renderer>().material = wall_material;
             }
             else
             {
@@ -277,6 +300,8 @@ public class Room_spawn : MonoBehaviour
                                 Corridor_rwall.transform.localScale = new Vector3(distance, wall_height, 0.1f);
                                 Corridor_lwall.transform.position = new Vector3(wall.x-0.1f + distance / 2f, wall_height / 2f, wall.z+Road_length/2f);
                                 Corridor_rwall.transform.position = new Vector3(wall.x-0.1f + distance / 2f, wall_height / 2f, wall.z-Road_length/2f);
+                                Corridor_lwall.GetComponent<Renderer>().material = wall_material;
+                                Corridor_rwall.GetComponent<Renderer>().material = wall_material;
                             }
                             
                         }
@@ -310,6 +335,8 @@ public class Room_spawn : MonoBehaviour
                                 Corridor_rwall.transform.localScale = new Vector3(distance, wall_height, 0.1f);
                                 Corridor_lwall.transform.position = new Vector3(wall.x+0.1f - distance / 2f, wall_height / 2f, wall.z+Road_length/2f);
                                 Corridor_rwall.transform.position = new Vector3(wall.x+0.1f - distance / 2f, wall_height / 2f, wall.z-Road_length/2f);
+                                Corridor_lwall.GetComponent<Renderer>().material = wall_material;
+                                Corridor_rwall.GetComponent<Renderer>().material = wall_material;
                             }
                         }
                     }
@@ -344,6 +371,8 @@ public class Room_spawn : MonoBehaviour
                                 Corridor_rwall.transform.localScale = new Vector3(0.1f, wall_height, distance);
                                 Corridor_lwall.transform.position = new Vector3(wall.x+Road_length/2f, wall_height / 2f, wall.z+0.1f + distance / 2f);
                                 Corridor_rwall.transform.position = new Vector3(wall.x-Road_length/2f, wall_height / 2f, wall.z+0.1f + distance / 2f);
+                                Corridor_lwall.GetComponent<Renderer>().material = wall_material;
+                                Corridor_rwall.GetComponent<Renderer>().material = wall_material;
                             }
                                 
                         }
@@ -379,6 +408,8 @@ public class Room_spawn : MonoBehaviour
                                 Corridor_rwall.transform.localScale = new Vector3(0.1f, wall_height, distance);
                                 Corridor_lwall.transform.position = new Vector3(wall.x+Road_length/2f, wall_height / 2f, wall.z+0.1f - distance / 2f);
                                 Corridor_rwall.transform.position = new Vector3(wall.x-Road_length/2f, wall_height / 2f, wall.z+0.1f - distance / 2f);
+                                Corridor_lwall.GetComponent<Renderer>().material = wall_material;
+                                Corridor_rwall.GetComponent<Renderer>().material = wall_material;
                             }
                         }
                     }
@@ -433,6 +464,8 @@ public class Room_spawn : MonoBehaviour
                             Corridor_rwall.transform.localScale = new Vector3(0.1f, wall_height, maxZ - minZ);
                             Corridor_lwall.transform.position = new Vector3(roadBound.center.x - Road_length / 2f, wall_height / 2f, (maxZ + minZ) / 2f);
                             Corridor_rwall.transform.position = new Vector3(roadBound.center.x + Road_length / 2f, wall_height / 2f, (maxZ + minZ) / 2f);
+                            Corridor_lwall.GetComponent<Renderer>().material = wall_material;
+                            Corridor_rwall.GetComponent<Renderer>().material = wall_material;
                         }
                     }
                     else
@@ -451,6 +484,8 @@ public class Room_spawn : MonoBehaviour
                             Corridor_rwall.transform.localScale = new Vector3(maxX - minX, wall_height, 0.1f);
                             Corridor_lwall.transform.position = new Vector3((maxX + minX) / 2f, wall_height / 2f, roadBound.center.z - Road_length / 2f);
                             Corridor_rwall.transform.position = new Vector3((maxX + minX) / 2f, wall_height / 2f, roadBound.center.z + Road_length / 2f);
+                            Corridor_lwall.GetComponent<Renderer>().material = wall_material;
+                            Corridor_rwall.GetComponent<Renderer>().material = wall_material;
                         }
 
                     }
@@ -537,6 +572,8 @@ public class Room_spawn : MonoBehaviour
                     }
                     Walls.Add(wall_up.GetComponent<Renderer>().bounds);
                     Walls.Add(wall_down.GetComponent<Renderer>().bounds);
+                    wall_up.GetComponent<Renderer>().material = wall_material;
+                    wall_down.GetComponent<Renderer>().material = wall_material;
                 }
             }
         }
@@ -585,6 +622,7 @@ public class Room_spawn : MonoBehaviour
                         length = Mathf.Abs(room.max.z - room.min.z);
                         room_wall.transform.localScale = new Vector3(length, wall_height, 0.1f);
                     }
+                    room_wall.GetComponent<Renderer>().material = wall_material;
                 }
             }
         }
