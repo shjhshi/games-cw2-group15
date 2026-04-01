@@ -15,10 +15,27 @@ public class Enemies_Spawn : MonoBehaviour
     public GameObject BossRoom;
     public GameObject PlayerPrefab;
     public GameObject BossPrefab;
+    public bool SpawnEnemies = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        SpawnEnemies = false;
+    }
+    void Upgrade()
+    {
+        if (SpawnEnemies)
+        {
+            StartCoroutine(StartSpawn());
+            SpawnEnemies = false;
+        }
+    }
+    
+    System.Collections.IEnumerator StartSpawn()
+    {
+        CleanAllEnemies();
+        yield return new WaitForSeconds(1f);
+
         PlayerPrefab = Resources.Load<GameObject>("Player");
         BossPrefab = Resources.Load<GameObject>("Boss");
         NormalRooms = new List<GameObject>(GameObject.FindGameObjectsWithTag("Room"));
@@ -44,6 +61,15 @@ public class Enemies_Spawn : MonoBehaviour
         SpawnBoss(bossBound.center);
     }
 
+    void CleanAllEnemies()
+    {
+        NormalRooms.Clear();
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            Destroy(enemy);
+        }
+    }
 
     Bounds GetRoomBounds(GameObject room)
     {
