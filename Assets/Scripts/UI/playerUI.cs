@@ -27,7 +27,7 @@ public class playerUI : MonoBehaviour
     void Start()
     {
         stats.ResetStats();
-        Time.timeScale = 0;
+        MainMenu();
     }
 
     // Update is called once per frame
