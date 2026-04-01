@@ -15,19 +15,20 @@ public class Enemies_Spawn : MonoBehaviour
     public GameObject BossRoom;
     public GameObject PlayerPrefab;
     public GameObject BossPrefab;
+    public List<GameObject> EnemyPrefabs = new List<GameObject>();
     public bool SpawnEnemies = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        SpawnEnemies = false;
+        Spawn_Enemies = false;
     }
-    void Upgrade()
+    void Update()
     {
-        if (SpawnEnemies)
+        if (Spawn_Enemies)
         {
             StartCoroutine(StartSpawn());
-            SpawnEnemies = false;
+            Spawn_Enemies = false;
         }
     }
     
@@ -101,16 +102,38 @@ public class Enemies_Spawn : MonoBehaviour
     }
     void SpawnEnemy(Vector3 Position)
     {
-       
+        string path = "Assets\\EnemyAIs";
+        string fullPath = Path.Combine(Application.dataPath, "EnemyAIs");
+        string[] blenderFiles = Directory.GetFiles(fullPath, "*.prefab", SearchOption.TopDirectoryOnly);
+        if (blenderFiles.Length == 0)
+        {
+            Debug.LogError("No prefab files found in " + path);
+            return;
+        }
+        else
+        {
+            string randomPrefabPath = blenderFiles[Random.Range(0, blenderFiles.Length)];
+            string assetPath = "Assets/EnemyAIs/" + Path.GetFileName(randomPrefabPath);
+            GameObject enemyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            if (enemyPrefab != null)
+            {
+                GameObject enemy = Instantiate(enemyPrefab, Position, Quaternion.identity);
+                enemy.tag = "Enemy";
+                NavMeshSurface surface = FindObjectOfType<NavMeshSurface>();
+            }
+            else
+            {
+                Debug.LogWarning("Failed to load prefab at " + assetPath);
+            }
+            EnemyPrefabs.Add(enemyPrefab);
+        }
     }
     void SpawnPlayer(Vector3 Position)
     {
-        GameObject player = Instantiate(PlayerPrefab, Position, Quaternion.identity);
-        NavMeshSurface surface = FindObjectOfType<NavMeshSurface>();
+
     }
     void SpawnBoss(Vector3 Position)
     {
-        GameObject boss = Instantiate(BossPrefab, Position, Quaternion.identity);
-         NavMeshSurface surface = FindObjectOfType<NavMeshSurface>();
+
     }
 }
