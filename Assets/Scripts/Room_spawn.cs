@@ -9,7 +9,7 @@ using Unity.AI.Navigation;
 public class Room_spawn : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private string folderPath =  "Scenes";
+    private string folderPath =  "Resources";
         public int maxX =25;
         public int maxZ =25;
         public int minX = -25;
@@ -17,6 +17,7 @@ public class Room_spawn : MonoBehaviour
         public int attempts_spawn = 50;
         public float least_distance=7f;
         public float max_distance=15f;
+        public bool SpawnOnStart = true;
         public bool Start_spawn = false;
         public float Road_length = 1f;
         private float Road_width = 0.01f;
@@ -40,7 +41,7 @@ public class Room_spawn : MonoBehaviour
         {
             Debug.LogWarning("Failed to load floor material. Please ensure 'floor_material' exists in the Resources folder.");
         }
-        Start_spawn = false;
+        Start_spawn = SpawnOnStart;
     }
 // Update is called once per frame
     void Update()
@@ -658,8 +659,8 @@ public class Room_spawn : MonoBehaviour
     void Generate_spawn()
     {
         
-        string assetPath = $"Assets\\Scenes\\special\\spawn.blend";
-        GameObject spawnpoint = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+        string assetPath = $"Scenes\\special\\spawn";
+        GameObject spawnpoint = Resources.Load<GameObject>(assetPath);
         if (spawnpoint == null)
         {
             Debug.LogError($"Cannot load spawn point prefab: {assetPath}");
@@ -677,10 +678,10 @@ public class Room_spawn : MonoBehaviour
         spawned_prefabs.Add(instance);
         room_bounds.Add(GetRoomBounds(instance));
     }
-    void Generate_boss_room()
+   void Generate_boss_room()
     {
-            string assetPath = $"Assets\\Scenes\\special\\boss_room.blend";
-            GameObject boss_room = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            string assetPath = $"Scenes\\special\\boss_room";
+            GameObject boss_room = Resources.Load<GameObject>(assetPath);
             if (boss_room == null)
             {
                 Debug.LogError($"Cannot load boss room prefab: {assetPath}");
@@ -710,7 +711,7 @@ public class Room_spawn : MonoBehaviour
     {
         
         // go through the file
-        string fullPath = Path.Combine(Application.dataPath, folderPath);
+        string fullPath = Path.Combine(Application.dataPath, "Resources\\Scenes");
         if (!Directory.Exists(fullPath))
         {
             Debug.LogError($"not exist: {fullPath}");
@@ -727,8 +728,13 @@ public class Room_spawn : MonoBehaviour
         List<GameObject> prefabs = new List<GameObject>();
         foreach (string file in blenderFiles)
         {
-            string assetPath = file.Replace(Application.dataPath, "Assets");
-            GameObject obj = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            string assetPath = file.Replace(fullPath, "Scenes").Replace("\\", "/");
+            int lastDash = assetPath.LastIndexOf('.');
+            if (lastDash != -1)
+            {
+                assetPath = assetPath.Substring(0, lastDash);
+            }
+            GameObject obj = Resources.Load<GameObject>(assetPath);
             if (obj != null)
             {
                 prefabs.Add(obj);

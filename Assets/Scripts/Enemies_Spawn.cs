@@ -13,35 +13,53 @@ public class Enemies_Spawn : MonoBehaviour
     public List<GameObject> NormalRooms = new List<GameObject>();
     public GameObject SpawnPoint;
     public GameObject BossRoom;
-    public GameObject PlayerPrefab;
     public GameObject BossPrefab;
     public List<GameObject> EnemyPrefabs = new List<GameObject>();
+    public bool SpawnOnStart = true;
     public bool Spawn_Enemies = false;
+    private bool isSpawning;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Spawn_Enemies = false;
+        Spawn_Enemies = SpawnOnStart;
     }
     void Update()
     {
         if (Spawn_Enemies)
         {
-            StartCoroutine(StartSpawn());
+            TriggerSpawn();
             Spawn_Enemies = false;
         }
+    }
+
+    public void TriggerSpawn()
+    {
+        if (isSpawning)
+        {
+            return;
+        }
+
+        StartCoroutine(StartSpawn());
     }
     
     System.Collections.IEnumerator StartSpawn()
     {
+        isSpawning = true;
         CleanAllEnemies();
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
 
-        PlayerPrefab = Resources.Load<GameObject>("Player");
         BossPrefab = Resources.Load<GameObject>("Boss");
         NormalRooms = new List<GameObject>(GameObject.FindGameObjectsWithTag("Room"));
 
         SpawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint");
+        if (SpawnPoint == null)
+        {
+            Debug.LogError("No SpawnPoint object found in the scene.");
+            isSpawning = false;
+            yield break;
+        }
+
         Bounds spawnBound = GetRoomBounds(SpawnPoint);
         SpawnPlayer(spawnBound.center); 
 
@@ -62,8 +80,13 @@ public class Enemies_Spawn : MonoBehaviour
         
 
         BossRoom = GameObject.FindGameObjectWithTag("BossRoom");
-        Bounds bossBound = GetRoomBounds(BossRoom);
-        SpawnBoss(bossBound.center);
+        if (BossRoom != null)
+        {
+            Bounds bossBound = GetRoomBounds(BossRoom);
+            SpawnBoss(bossBound.center);
+        }
+
+        isSpawning = false;
     }
 
     void CleanAllEnemies()
@@ -134,23 +157,25 @@ public class Enemies_Spawn : MonoBehaviour
     }
     void SpawnPlayer(Vector3 Position)
     {
-        string fullPath = Path.Combine(Application.dataPath, "Player");
-        string playerPrefabPath = Directory.GetFiles(fullPath, "*.prefab", SearchOption.TopDirectoryOnly).FirstOrDefault();
-        if (playerPrefabPath == null)        {
-            Debug.LogError("No player prefab found in " + fullPath);
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            Debug.LogError("No player object found in the scene hierarchy.");
             return;
         }
-        string assetPath = "Assets/Player/" + Path.GetFileName(playerPrefabPath);
-        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-        if (playerPrefab != null)
+
+        Vector3 spawnPos = new Vector3(Position.x, 1f, Position.z);
+
+        CharacterController cc = player.GetComponent<CharacterController>();
+        if (cc != null)
         {
-            GameObject player = Instantiate(playerPrefab, Position, Quaternion.identity);
-            player.tag = "Player";
-            EnemyPrefabs.Add(playerPrefab);
+            cc.enabled = false;
+            player.transform.position = spawnPos;
+            cc.enabled = true;
         }
         else
         {
-            Debug.LogError("Failed to load player prefab at " + assetPath);
+            player.transform.position = spawnPos;
         }
     }
     void SpawnBoss(Vector3 Position)
