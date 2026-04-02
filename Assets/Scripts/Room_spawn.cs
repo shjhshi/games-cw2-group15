@@ -10,16 +10,16 @@ public class Room_spawn : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private string folderPath =  "Scenes";
-        public int maxX =250;
-        public int maxZ =250;
-        public int minX = -250;
-        public int minZ = -250;
+        public int maxX =25;
+        public int maxZ =25;
+        public int minX = -25;
+        public int minZ = -25;
         public int attempts_spawn = 50;
-        public float least_distance=70f;
-        public float max_distance=150f;
+        public float least_distance=7f;
+        public float max_distance=15f;
         public bool Start_spawn = false;
-        public float Road_length = 10f;
-        private float Road_width = 0.1f;
+        public float Road_length = 1f;
+        private float Road_width = 0.01f;
         public float wall_height = 10f;
         public List<GameObject> spawned_prefabs = new List<GameObject>();
         public List<GameObject> road_prefabs = new List<GameObject>();
@@ -231,10 +231,13 @@ public class Room_spawn : MonoBehaviour
             int count = 0;
             foreach (Bounds roadBound in roadBounds)
             {
-                if(roadBound.Contains(wall))
+                foreach(Bounds roomBound in room_bounds)
                 {
-                    count++;
-                    break;
+                    if(roadBound.Contains(wall)||roomBound.Contains(wall))
+                    {
+                        count++;
+                        break;
+                    }
                 }
             }
             if (count == 0)
@@ -614,12 +617,12 @@ public class Room_spawn : MonoBehaviour
                     float length = 0f;
                     if (Mathf.Approximately(side.z, room.center.z))
                     {
-                        length = Mathf.Abs(room.max.x - room.min.x);
+                        length = Mathf.Abs(room.max.z - room.min.z);
                         room_wall.transform.localScale = new Vector3(0.1f, wall_height, length);
                     }
                     else
                     {
-                        length = Mathf.Abs(room.max.z - room.min.z);
+                        length = Mathf.Abs(room.max.x - room.min.x);
                         room_wall.transform.localScale = new Vector3(length, wall_height, 0.1f);
                     }
                     room_wall.GetComponent<Renderer>().material = wall_material;
@@ -752,6 +755,7 @@ public class Room_spawn : MonoBehaviour
                 float z = Random.Range(minZ, maxZ);
                 int random_rotate = Random.Range(0, 4); 
                 Vector3 rotation = new Vector3(0, random_rotate*90, 0);
+                // Vector3 rotation = new Vector3(0, 0, 0);
                 Quaternion rotation_quaternion = Quaternion.Euler(rotation);
                 Vector3 position = new Vector3(x, 0, z);
                 Vector3 halfExtents = new Vector3(least_distance, 0.1f, least_distance);

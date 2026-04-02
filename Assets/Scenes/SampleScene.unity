@@ -164,16 +164,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92fcdcc218fb0554da15a6136f7fbbf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Room_spawn
-  maxX: 250
-  maxZ: 250
-  minX: -250
-  minZ: -250
+  maxX: 25
+  maxZ: 25
+  minX: -25
+  minZ: -25
   attempts_spawn: 50
-  least_distance: 70
-  max_distance: 150
+  least_distance: 7
+  max_distance: 15
   Start_spawn: 0
-  Road_length: 10
-  wall_height: 10
+  Road_length: 1
+  wall_height: 2
   spawned_prefabs: []
   road_prefabs: []
   road_bounds: []
@@ -201,7 +201,7 @@ MonoBehaviour:
   PlayerPrefab: {fileID: 0}
   BossPrefab: {fileID: 0}
   EnemyPrefabs: []
-  SpawnEnemies: 0
+  Spawn_Enemies: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

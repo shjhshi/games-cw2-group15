@@ -46,7 +46,7 @@ public class Enemies_Spawn : MonoBehaviour
             int NumberOfEnemies = Random.Range(minEnemies, maxEnemies + 1);
             float RandomX = Random.Range(roomBound.min.x, roomBound.max.x);
             float RandomZ = Random.Range(roomBound.min.z, roomBound.max.z);
-            Vector3 Position = new Vector3(RandomX, 10f, RandomZ);
+            Vector3 Position = new Vector3(RandomX, 1f, RandomZ);
             for (int i = 0; i < NumberOfEnemies; i++)
             {
                 SpawnEnemy(Position);
